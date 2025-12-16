@@ -1,0 +1,289 @@
+﻿    cout << endl;
+    cout << "--- Testiranje Kronekerovog proizvoda ---" << endl;
+ 
+    Matrica B(2, 2, "MatricaB");
+ 
+    cout << "Unesite malu 2x2 matricu B za test proizvoda:" << endl;
+    B.unesiElemente();
+
+    Matrica K = A.kroneckerProizvod(B);
+    K.prikaziMatricu();
+
+    return 0;
+
+    /*
+=========================================================================
+ZBIRKA MOGUĆIH MAIN PROGRAMA ZA KLASU MATRICA
+Autor: Gemini
+Opis: Različiti scenariji korišćenja klase Matrica za potrebe ispita.
+=========================================================================
+*/
+
+// ======================================================================
+// SCENARIO 1: OSNOVNI ZADATAK (Kao u postavci)
+// Fokus: Unos, ispis, sumiranje redova i kolona.
+// ======================================================================
+
+#include <iostream>
+#include "Matrica.h"
+using namespace std;
+
+int main() {
+    int r, c;
+    cout << "--- ZADATAK: SUMIRANJE ---" << endl;
+    cout << "Unesite dimenzije (redovi kolone): ";
+    cin >> r >> c;
+
+    Matrica A(r, c, "A");
+    A.unesiElemente();
+    A.prikaziMatricu();
+
+    // Sumiranje 1. i 3. kolone (indeksi 0 i 2)
+    if (A.getBrKolona() >= 3) {
+        cout << "Suma 1. kolone: " << A.sumaKolone(0) << endl;
+        cout << "Suma 3. kolone: " << A.sumaKolone(2) << endl;
+    } else {
+        cout << "Nema dovoljno kolona za test sume." << endl;
+    }
+
+    // Sumiranje 2. i 3. reda (indeksi 1 i 2)
+    if (A.getBrRedova() >= 3) {
+        cout << "Suma 2. reda: " << A.sumaReda(1) << endl;
+        cout << "Suma 3. reda: " << A.sumaReda(2) << endl;
+    } else {
+        cout << "Nema dovoljno redova za test sume." << endl;
+    }
+
+    return 0;
+}
+
+
+// ======================================================================
+// SCENARIO 2: MNOŽENJE DVE MATRICE (A * B)
+// Fokus: Provera dimenzija i kreiranje novog objekta kao rezultata.
+// ======================================================================
+
+#include <iostream>
+#include "Matrica.h"
+using namespace std;
+
+int main() {
+    cout << "--- ZADATAK: MNOZENJE MATRICA (A x B) ---" << endl;
+    
+    int r1, c1, r2, c2;
+    
+    // Unos prve matrice
+    cout << "Dimenzije Matrice A: "; 
+    cin >> r1 >> c1;
+    Matrica A(r1, c1, "A");
+    A.unesiElemente();
+
+    // Unos druge matrice
+    cout << "Dimenzije Matrice B: "; 
+    cin >> r2 >> c2;
+    Matrica B(r2, c2, "B");
+    B.unesiElemente();
+
+    // Provera uslova za množenje (Kolone A == Redovi B)
+    if (c1 == r2) {
+        cout << "Mnozim matrice..." << endl;
+        // Ovde se poziva funkcija proizvod koja vraca novi objekat
+        Matrica C = A.proizvod(B); 
+        C.prikaziMatricu();
+    } else {
+        cout << "GRESKA: Matrice se ne mogu pomnoziti!" << endl;
+        cout << "Broj kolona prve (" << c1 << ") mora biti jednak broju redova druge (" << r2 << ")." << endl;
+    }
+
+    return 0;
+}
+
+
+// ======================================================================
+// SCENARIO 3: TESTIRANJE "DUBOKE KOPIJE" (COPY KONSTRUKTOR I OPERATOR =)
+// Fokus: Najvažniji deo za ispit! Dokazuješ da si dobro rešio pokazivače.
+// Ako promeniš original, kopija NE SME da se promeni.
+// ======================================================================
+
+#include <iostream>
+#include "Matrica.h"
+using namespace std;
+
+int main() {
+    cout << "--- ZADATAK: TEST MEMORIJE (Deep Copy) ---" << endl;
+
+    // 1. Kreiramo matricu A
+    Matrica A(2, 2, "Original");
+    cout << "Unesite elemente za Original (unesite npr. sve 1):" << endl;
+    A.unesiElemente();
+
+    // 2. Testiramo Copy Konstruktor
+    cout << "\n[Test 1] Pravim Kopiju1 na osnovu Originala..." << endl;
+    Matrica Kopija1 = A; // Poziva se Copy Konstruktor
+
+    // 3. Testiramo Operator dodele
+    cout << "[Test 2] Pravim Kopiju2 i dodeljujem joj Original (Kopija2 = Original)..." << endl;
+    Matrica Kopija2(2, 2, "NekaStara");
+    Kopija2 = A; // Poziva se operator=
+
+    // 4. MENJAM ORIGINAL (ključni trenutak)
+    cout << "\n[AKCIJA] Menjam Original (sve ponovo unesi, npr. sve 9)..." << endl;
+    A.unesiElemente();
+
+    // 5. Provera
+    cout << "\n--- REZULTATI TESTA ---" << endl;
+    cout << "Original (treba da budu 9-ke):" << endl;
+    A.prikaziMatricu();
+
+    cout << "Kopija1 (treba da ostanu 1-ice) - Ako su 9, pao si ispit:" << endl;
+    Kopija1.prikaziMatricu();
+
+    cout << "Kopija2 (treba da ostanu 1-ice) - Ako su 9, pao si ispit:" << endl;
+    Kopija2.prikaziMatricu();
+
+    return 0;
+}
+
+
+// ======================================================================
+// SCENARIO 4: NIZ OBJEKATA (Više matrica odjednom)
+// Fokus: Rad sa nizovima klasa i petljama.
+// ======================================================================
+
+#include <iostream>
+#include "Matrica.h"
+using namespace std;
+
+int main() {
+    cout << "--- ZADATAK: NIZ MATRICA ---" << endl;
+    
+    int n;
+    cout << "Koliko matrica zelite da kreirate? ";
+    cin >> n;
+
+    // Kreiranje niza objekata (dinamički)
+    // Ovde se N puta poziva Default konstruktor (20x20, "Default")
+    Matrica* nizMatrica = new Matrica[n]; 
+
+    // Petlja za izmenu svake matrice (smanjicemo ih na 2x2 radi testa)
+    for(int i = 0; i < n; i++) {
+        char ime[10];
+        sprintf_s(ime, "Mat_%d", i+1); // Pravimo ime Mat_1, Mat_2...
+        
+        // Koristimo operator dodele da pregazimo default matricu novom manjom
+        // Ovo je trik jer nizovi obično zovu default konstruktor
+        nizMatrica[i] = Matrica(2, 2, ime); 
+        
+        cout << "\nUnos za " << ime << ":" << endl;
+        nizMatrica[i].unesiElemente();
+    }
+
+    cout << "\n--- PRIKAZ SVIH MATRICA ---" << endl;
+    for(int i = 0; i < n; i++) {
+        nizMatrica[i].prikaziMatricu();
+    }
+
+    // Čišćenje niza
+    delete[] nizMatrica;
+
+    return 0;
+}
+
+
+// ======================================================================
+// SCENARIO 5: KRONEKEROV PROIZVOD (Malo x Malo = Veliko)
+// Fokus: Demonstracija funkcije koja drastično uvećava dimenzije.
+// ======================================================================
+
+#include <iostream>
+#include "Matrica.h"
+using namespace std;
+
+int main() {
+    cout << "--- ZADATAK: KRONEKEROV PROIZVOD ---" << endl;
+    
+    // Za Kronekera je najbolje koristiti male matrice da bi stalo na ekran
+    // Npr. 2x2 i 2x2 daju 4x4. 
+    
+    Matrica M1(2, 2, "Mala1");
+    cout << "Unesi prvu matricu (2x2):" << endl;
+    M1.unesiElemente();
+
+    Matrica M2(2, 2, "Mala2");
+    cout << "Unesi drugu matricu (2x2):" << endl;
+    M2.unesiElemente();
+
+    cout << "\nRacunam Kronekerov proizvod..." << endl;
+    Matrica Rezultat = M1.kroneckerProizvod(M2);
+    
+    // Prikaz rezultata (treba da bude 4x4)
+    Rezultat.prikaziMatricu();
+    cout << "Dimenzije rezultata: " << Rezultat.getBrRedova() << "x" << Rezultat.getBrKolona() << endl;
+
+    return 0;
+}
+
+// ... ostale funkcije ...
+void prikaziMatricu() const;
+
+// DODAJ OVO:
+void izmeniElement(int red, int kolona, double novaVrednost);
+
+// Funkcija za izmenu pojedinacnog elementa
+void Matrica::izmeniElement(int red, int kolona, double novaVrednost) {
+    // Provera da li su indeksi validni
+    if (red >= 0 && red < brRedova && kolona >= 0 && kolona < brKolona) {
+        elementi[red][kolona] = novaVrednost;
+        cout << ">> Uspesno izmenjen element [" << red << "][" << kolona << "] na vrednost: " << novaVrednost << endl;
+    } else {
+        cout << "Greska: Pokusavate da pristupite nepostojecem elementu!" << endl;
+    }
+}
+
+#include <iostream>
+#include "Matrica.h"
+
+using namespace std;
+
+int main() {
+    cout << "--- ZADATAK: IZMENA POJEDINACNOG ELEMENTA ---" << endl;
+
+    // 1. Kreiramo matricu 3x3 radi lakšeg testa
+    Matrica M(3, 3, "MatricaM");
+    
+    cout << "Molim vas popunite matricu:" << endl;
+    M.unesiElemente();
+    
+    cout << endl;
+    M.prikaziMatricu();
+
+    // 2. Petlja za izmenu
+    char odgovor;
+    do {
+        int r, c;
+        double val;
+
+        cout << "\nKoji element zelite da promenite?" << endl;
+        cout << "Unesite broj REDA (1-3): ";
+        cin >> r;
+        cout << "Unesite broj KOLONE (1-3): ";
+        cin >> c;
+        cout << "Unesite NOVU VREDNOST: ";
+        cin >> val;
+
+        // Pozivamo funkciju (smanjujemo r i c za 1 jer u C++ krecu od 0)
+        // Ako korisnik unese 1. red, to je indeks 0.
+        M.izmeniElement(r - 1, c - 1, val);
+
+        cout << "\nNova matrica izgleda ovako:" << endl;
+        M.prikaziMatricu();
+
+        cout << "\nDa li zelite da promenite jos jedan broj? (d/n): ";
+        cin >> odgovor;
+
+    } while (odgovor == 'd' || odgovor == 'D');
+
+    cout << "Kraj programa." << endl;
+
+    return 0;
+}
