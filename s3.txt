@@ -1,0 +1,50 @@
+1. SELECT G.IME, G.PREZIME
+FROM GLUMAC G, IGRA, FILM
+WHERE G.BROJ = IGRA.GLUMAC AND FILM.BROJ = IGRA.FILM AND lower(IGRA.ULOGA) = 'vronsky' and lower(FILM.NASLOV) = 'anna karenina' 
+
+2.
+select tip, count(*) as broj_filmova_po_tipu
+from FILM
+group by tip
+having count(*) > 5
+order by broj_filmova_po_tipu desc
+
+3. 
+
+1) MOJE RESENJE:
+select distinct f.broj, f.naslov
+from film f, reziser, glumac, igra
+where f.reziser = reziser.broj and f.broj = igra.film and glumac.broj = igra.glumac and ((lower(glumac.ime) = 'slavko' and lower(glumac.prezime) = 'stimac') or (lower(reziser.ime) = 'srdjan' and lower(reziser.prezime) = 'karanovic'))
+
+2)
+
+4. moje resenje: 
+select f.broj, f.naslov
+from film f inner join igra on f.broj = igra.film
+    inner join glumac on glumac.broj = igra.glumac
+where glumac.ime = 'Slavko' and glumac.prezime = 'Stimac'
+INTERSECT
+select f.broj, f.naslov
+from film f inner join reziser on f.reziser = reziser.broj
+where reziser.ime = 'Emir' and reziser.prezime = 'Kusturica'
+njihovo :
+
+5. Select reziser.ime, reziser.prezime, reziser.broj 
+from reziser inner join film on reziser.broj = film.reziser
+where film.tip = 'drama'
+INTERSECT
+Select reziser.ime, reziser.prezime, reziser.broj 
+from reziser inner join film on reziser.broj = film.reziser
+where film.tip = 'comedy'
+
+6.
+
+7.
+
+8.
+select * from (select reziser.broj, reziser.ime, reziser.prezime, count(*) as broj_drama
+from reziser inner join film on reziser.broj = film.reziser
+where film.tip = 'drama'
+group by reziser.broj, reziser.ime, reziser.prezime
+order by broj_drama desc)
+where ROWNUM = 1
