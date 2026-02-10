@@ -1,0 +1,154 @@
+#ifndef BUFFER_H
+#define BUFFER_H
+
+#include <iostream>
+#include <stdexcept>
+using namespace std;
+
+template <typename T, int MaxSize>
+class Buffer {
+private:
+    T items[MaxSize];
+    int currentSize;
+
+public:
+    Buffer() : currentSize(0) {}
+
+    void add(const T& item) {
+        if (currentSize < MaxSize) {
+            items[currentSize++] = item;
+        } else {
+            cout << "Buffer je pun!" << endl;
+        }
+    }
+
+    T getItem(int index) const {
+        if (index >= 0 && index < currentSize) {
+            return items[index];
+        } else {
+            throw out_of_range("Indeks je van opsega!");
+        }
+    }
+
+    T getFirst() const {
+        if (currentSize > 0) {
+            return items[0];
+        } else {
+            throw out_of_range("Buffer je prazan!");
+        }
+    }
+
+    T getLast() const {
+        if (currentSize > 0) {
+            return items[currentSize - 1];
+        } else {
+            throw out_of_range("Buffer je prazan!");
+        }
+    }
+};
+
+#endif
+
+
+
+#ifndef STUDENT_H
+#define STUDENT_H
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Student {
+private:
+    string ime;
+    string prezime;
+    int brojIndeksa;
+    double prosecnaOcena;
+
+public:
+    Student();
+    Student(const Student& other);
+    Student& operator=(const Student& other);
+
+    friend istream& operator>>(istream& in, Student& s);
+    friend ostream& operator<<(ostream& out, const Student& s);
+};
+
+#endif
+
+
+
+#include "Student.h"
+
+Student::Student() : ime(""), prezime(""), brojIndeksa(0), prosecnaOcena(0.0) {}
+
+Student::Student(const Student& other) 
+    : ime(other.ime), prezime(other.prezime), brojIndeksa(other.brojIndeksa), prosecnaOcena(other.prosecnaOcena) {}
+
+Student& Student::operator=(const Student& other) {
+    if (this != &other) {
+        ime = other.ime;
+        prezime = other.prezime;
+        brojIndeksa = other.brojIndeksa;
+        prosecnaOcena = other.prosecnaOcena;
+    }
+    return *this;
+}
+
+istream& operator>>(istream& in, Student& s) {
+    cout << "Unesite ime: ";
+    in >> s.ime;
+    cout << "Unesite prezime: ";
+    in >> s.prezime;
+    cout << "Unesite broj indeksa: ";
+    in >> s.brojIndeksa;
+    cout << "Unesite prosecnu ocenu: ";
+    in >> s.prosecnaOcena;
+    return in;
+}
+
+ostream& operator<<(ostream& out, const Student& s) {
+    out << "Ime: " << s.ime << ", Prezime: " << s.prezime 
+        << ", Broj indeksa: " << s.brojIndeksa << ", Prosecna ocena: " << s.prosecnaOcena;
+    return out;
+}
+
+
+
+
+#include <iostream>
+#include "Buffer.h"
+#include "Student.h"
+
+using namespace std;
+
+int main() {
+    // 1. Buffer za karaktere
+    Buffer<char, 10> charBuffer;
+    charBuffer.add('A');
+    charBuffer.add('B');
+    charBuffer.add('C');
+    
+    cout << "--- Testiranje char buffera ---" << endl;
+    cout << "Prvi element: " << charBuffer.getFirst() << endl;
+    cout << "Zadnji element: " << charBuffer.getLast() << endl << endl;
+
+    // 2. Buffer za studente
+    Buffer<Student, 5> studentBuffer;
+    Student s1, s2;
+
+    cout << "--- Unos studenata ---" << endl;
+    cout << "Student 1:" << endl;
+    cin >> s1;
+    studentBuffer.add(s1);
+
+    cout << "Student 2:" << endl;
+    cin >> s2;
+    studentBuffer.add(s2);
+
+    cout << "\n--- Stanje u student bufferu ---" << endl;
+    cout << "Prvi student: " << studentBuffer.getFirst() << endl;
+    cout << "Zadnji student: " << studentBuffer.getLast() << endl;
+
+    return 0;
+}
